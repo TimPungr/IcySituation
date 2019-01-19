@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class icebox : MonoBehaviour
 {
 
-    const float TIME_TO_FREEZE = 3f;
+    private float TIME_TO_FREEZE = 3f;
 
     [SerializeField] private SpriteRenderer thisSprite;
     [SerializeField] private Rigidbody2D thisBody;
@@ -23,6 +23,12 @@ public class icebox : MonoBehaviour
         gyro.enabled = true;
         changePerSecond = (80f / 255f) / TIME_TO_FREEZE;
         manager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    public void SetFreezeTime(float newTime)
+    {
+        TIME_TO_FREEZE = newTime;
+        changePerSecond = (80f / 255f) / TIME_TO_FREEZE;
     }
 
     // Update is called once per frame

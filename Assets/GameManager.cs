@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameoverContainer;
     [SerializeField] private GameObject boxParent;
     [SerializeField] private Button[] easterEgg;
-    [SerializeField] private TMP_Text eeText;
+    [SerializeField] private GameObject MainMenu;
+    [SerializeField] private GameObject GameMenu;
+    [SerializeField] private GameObject OptionsMenu;
+    [SerializeField] private Slider cameraHeightSlider;
 
     private int liveCounter = 3;
     private Vector3 initCamPos;
@@ -41,8 +44,14 @@ public class GameManager : MonoBehaviour
         heightText.text = string.Format(livesString, height / 10);
         if (height > 2f)
         {
-            gameCam.transform.position = new Vector3(0, height + 4.5f, -10);
+            gameCam.transform.position = new Vector3(0, height + cameraHeightSlider.value - 2f, -10);
         }
+    }
+
+    public void OpenOptions()
+    {
+        MainMenu.SetActive(false);
+        OptionsMenu.SetActive(true);
     }
 
     public void DecreaseLives()
@@ -66,7 +75,6 @@ public class GameManager : MonoBehaviour
                 easterEggSequenceCounter = 0;
                 if (liveCounter < 3)
                 {
-                    eeText.gameObject.SetActive(true);
                     lives[liveCounter].texture = FullHeart;
                     liveCounter++;
                 }
@@ -80,7 +88,9 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-
+        spawner.SetActive(true);
+        GameMenu.SetActive(true);
+        MainMenu.SetActive(false);
     }
 
     private void ResetGame()

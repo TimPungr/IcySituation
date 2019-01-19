@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class BoxSpawner : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class BoxSpawner : MonoBehaviour
     [SerializeField] private float spawnTimerInit;
     [SerializeField] private GameObject box;
     [SerializeField] private GameObject boxParent;
+    [SerializeField] private Slider freezeTimeSlider;
+    [SerializeField] private Slider spawnTimeSlider;
     private float spawnTimer;
 
     private void Start()
@@ -24,7 +27,7 @@ public class BoxSpawner : MonoBehaviour
         if (spawnTimer <= 0)
         {
             SpawnBox();
-            spawnTimer = spawnTimerInit;
+            spawnTimer = spawnTimeSlider.value;
         }
     }
 
@@ -34,5 +37,6 @@ public class BoxSpawner : MonoBehaviour
         GameObject newBox;
         newBox = Instantiate(box, new Vector3(xPos, transform.position.y, 0), Quaternion.identity);
         newBox.transform.parent = boxParent.transform;
+        newBox.GetComponent<icebox>().SetFreezeTime(freezeTimeSlider.value);
     }
 }
