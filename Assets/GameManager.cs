@@ -78,6 +78,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void StartGame()
+    {
+
+    }
+
     private void ResetGame()
     {
         spawner.SetActive(true);
