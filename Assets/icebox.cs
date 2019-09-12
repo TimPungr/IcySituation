@@ -11,16 +11,26 @@ public class icebox : MonoBehaviour
     [SerializeField] private Rigidbody2D thisBody;
     [SerializeField] private float horizontalSpeed = 100f;
 
-    private float changePerSecond;
-    private GameManager manager;
-    private Gyroscope gyro;
-    private bool touching;
+    protected float changePerSecond;
+    protected GameManager manager;
+    protected bool touching;
     private ContactPoint2D[] contacts;
+
+    protected ContactPoint2D[] Contacts
+    {
+        get
+        {
+            return contacts;
+        }
+
+        set
+        {
+            contacts = value;
+        }
+    }
 
     private void Start()
     {
-        gyro = Input.gyro;
-        gyro.enabled = true;
         changePerSecond = (80f / 255f) / TIME_TO_FREEZE;
         manager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
@@ -31,6 +41,10 @@ public class icebox : MonoBehaviour
         changePerSecond = (80f / 255f) / TIME_TO_FREEZE;
     }
 
+    protected virtual void OnFreeze()
+    {
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -38,6 +52,7 @@ public class icebox : MonoBehaviour
         {
             thisSprite.color = new Color(thisSprite.color.r, 70f / 255, thisSprite.color.b, thisSprite.color.a);           
             manager.IncreaseScore(transform.position.y);
+            OnFreeze();
             Destroy(thisBody);
             Destroy(this);
         }
@@ -48,7 +63,6 @@ public class icebox : MonoBehaviour
         }
 
         float move = Input.acceleration.x * horizontalSpeed;
-        //float move = Input.GetAxis("Horizontal") * horizontalSpeed;
         move *= Time.deltaTime;
         transform.Translate(move, 0, 0, Space.World);
 
@@ -75,11 +89,11 @@ public class icebox : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        contacts = new ContactPoint2D[collision.contactCount];
+        Contacts = new ContactPoint2D[collision.contactCount];
         if (transform.position.y > collision.transform.position.y + 1.7f)
         {
-            collision.GetContacts(contacts);
-            float collLength = Vector2.Distance(contacts[0].point, contacts[collision.contactCount - 1].point);
+            collision.GetContacts(Contacts);
+            float collLength = Vector2.Distance(Contacts[0].point, Contacts[collision.contactCount - 1].point);
             thisSprite.color = new Color(thisSprite.color.r, thisSprite.color.g - (changePerSecond * Time.deltaTime * Mathf.Max(1,collLength)), thisSprite.color.b, thisSprite.color.a);            
         }
     }

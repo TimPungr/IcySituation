@@ -1,11 +1,16 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
 
     const string livesString = "{0:F2} m";
+    const float baseGravity = -9.81f;
+    const float slowdownGravity = -3.5f;
+    const float slowdownSeconds = 3f;
 
     [SerializeField] private Camera gameCam;
     [SerializeField] private RawImage[] lives;
@@ -16,7 +21,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button resetButton;
     [SerializeField] private GameObject gameoverContainer;
     [SerializeField] private GameObject boxParent;
-    [SerializeField] private Button[] easterEgg;
     [SerializeField] private GameObject MainMenu;
     [SerializeField] private GameObject GameMenu;
     [SerializeField] private GameObject OptionsMenu;
@@ -24,19 +28,11 @@ public class GameManager : MonoBehaviour
 
     private int liveCounter = 3;
     private Vector3 initCamPos;
-    private int[] easterEggSequence;
-    private int easterEggSequenceCounter;
 
     private void Start()
     {
-        easterEggSequenceCounter = 0;
-        easterEggSequence = new[] { 0, 2, 1, 3, 1 };
         resetButton.onClick.AddListener(ResetGame);
         initCamPos = gameCam.transform.position;
-        foreach (Button but in easterEgg)
-        {
-            but.onClick.AddListener(() => EasterTime(but));
-        }
     }
 
     public void IncreaseScore(float height)
@@ -44,7 +40,7 @@ public class GameManager : MonoBehaviour
         heightText.text = string.Format(livesString, height / 10);
         if (height > 2f)
         {
-            gameCam.transform.position = new Vector3(0, height + cameraHeightSlider.value - 2f, -10);
+            gameCam.transform.DOMove(new Vector3(0, height + cameraHeightSlider.value - 2f, -10),0.75f);
         }
     }
 
@@ -65,25 +61,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void EasterTime(Button clicked)
+    public void IncraeseLives()
     {
-        if (clicked.gameObject.name == easterEggSequence[easterEggSequenceCounter].ToString())
+        if (liveCounter > 3)
         {
-            easterEggSequenceCounter++;
-            if (easterEggSequenceCounter == easterEgg.Length + 1)
-            {
-                easterEggSequenceCounter = 0;
-                if (liveCounter < 3)
-                {
-                    lives[liveCounter].texture = FullHeart;
-                    liveCounter++;
-                }
-            }
+            lives[liveCounter].texture = FullHeart;
+            liveCounter++;
         }
-        else
-        {
-            easterEggSequenceCounter = 0;
-        }
+    }
+
+    public void SlowdownGravity()
+    {
+        Physics2D.gravity = new Vector2(0, slowdownGravity);
+        StartCoroutine(ReturnGravity());
+    }
+
+    IEnumerator ReturnGravity()
+    {
+        yield return new WaitForSeconds(slowdownSeconds);
+        Physics2D.gravity = new Vector2(0, baseGravity);
     }
 
     public void StartGame()
